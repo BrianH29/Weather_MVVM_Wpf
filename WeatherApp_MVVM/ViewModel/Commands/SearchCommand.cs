@@ -11,8 +11,12 @@ namespace WeatherApp_MVVM.ViewModel.Commands
     {
         public WeatherVM VM { get; set; }
 
-        public event EventHandler? CanExecuteChanged;
+        public event EventHandler? CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
 
+        }
         public SearchCommand(WeatherVM vm) => VM = vm;
 
         public bool CanExecute(object? parameter)
