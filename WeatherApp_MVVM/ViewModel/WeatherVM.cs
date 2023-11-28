@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WeatherApp_MVVM.Model;
+using WeatherApp_MVVM.ViewModel.Commands;
+using WeatherApp_MVVM.ViewModel.Helpers;
 
 namespace WeatherApp_MVVM.ViewModel
 {
-    class WeatherVM : INotifyPropertyChanged
+    public class WeatherVM : INotifyPropertyChanged
     {
 
         private string query;
@@ -46,25 +48,42 @@ namespace WeatherApp_MVVM.ViewModel
             }
         }
 
+        public SearchCommand SearchCommand { get; set; }
+
         // this is just to check if the binding is working correctly
         public WeatherVM()
         {
-            SelectedCity = new City
+            /*
+             * if this is true, it means that we are currently not running the application and 
+             * we're currently only designing the application
+             * Then if this is false, then all of this won't be executed.
+             */
+            if(DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
             {
-                LocalizedName = "New York"
-            };
-
-            CurrentConditions = new CurrentConditions
-            {
-                WeatherText = "Partly Cloudy",
-                Temperature = new Temperature
+                SelectedCity = new City
                 {
-                    Metric = new Units
+                    LocalizedName = "New York"
+                };
+
+                CurrentConditions = new CurrentConditions
+                {
+                    WeatherText = "Partly Cloudy",
+                    Temperature = new Temperature
                     {
-                        Value = 21
+                        Metric = new Units
+                        {
+                            Value = 21
+                        }
                     }
-                }
-            };
+                };
+            }
+
+            SearchCommand = new SearchCommand(this);
+        }
+
+        public async void MakeQuery()
+        {
+            var cities = await AccuWeatherHelper.GetCities(Query);
         }
 
         //Interface
